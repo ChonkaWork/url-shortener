@@ -27,7 +27,7 @@ public class UrlController {
 
     @PostMapping
     private ResponseEntity<?> shortUrl(@RequestBody ShortenedUrlRequest request) {
-        var urlInfo = urlService.shortUrl(request.url(), request.title());
+        var urlInfo = urlService.shortUrl(request);
         return buildResponse(urlInfo);
     }
 

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        #shortenedUrl {
+            margin-top: 20px;
+        }
+        #shortenedUrl a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>URL Shortener</h1>
+    <form id="urlForm">
+        <label for="url">Enter URL:</label>
+        <input type="text" id="url" name="url" required>
+        <br>
+        <label for="title">Enter Title:</label>
+        <input type="text" id="title" name="title">
+        <br>
+        <button type="submit">Shorten URL</button>
+    </form>
+    <div id="shortenedUrl"></div>
+</div>
+
+<script>
+    const urlForm = document.getElementById('urlForm');
+    const shortenedUrlDiv = document.getElementById('shortenedUrl');
+
+    urlForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(urlForm);
+        const url = formData.get('url');
+        const title = formData.get('title');
+
+        try {
+            const response = await fetch('/short/url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url, title })
+            });
+
+            if (response.ok) {
+                const shortenedUrl = response.headers.get('Location');
+                if (shortenedUrl) {
+                    shortenedUrlDiv.innerHTML = `<p>Your shortened URL is: <a href="${shortenedUrl}" target="_blank">${shortenedUrl}</a></p>`;
+                } else {
+                    console.error('Shortened URL not found in response headers');
+                }
+            } else {
+                console.error('Failed to shorten URL:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error occurred:', error);
+        }
+    });
+
+</script>
+</body>
+</html>
